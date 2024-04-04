@@ -1,2 +1,4 @@
 .venv
 .DS_Store
+# ignore folder datasets
+datasets/
