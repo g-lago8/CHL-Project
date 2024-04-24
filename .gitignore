@@ -2,3 +2,6 @@
 .DS_Store
 # ignore folder datasets
 datasets/
+node_modules/ 
+package-lock.json
+package.json
