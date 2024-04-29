@@ -1,6 +1,10 @@
 
-
+import pandas as pd
 from Bio.Seq import MutableSeq
+from graphein.protein.config import ProteinGraphConfig
+from graphein.protein.graphs import construct_graph
+from Bio.PDB import PDBParser 
+
 
 def replace(sequence: MutableSeq, mutation:str) -> MutableSeq:
     """
@@ -27,3 +31,24 @@ def replace(sequence: MutableSeq, mutation:str) -> MutableSeq:
     
     sequence[position-1] = mut.upper()
     return sequence
+
+
+def create_graph_df():
+    config = ProteinGraphConfig()
+    df = pd.read_csv("../datasets/pdb_files.csv")
+    graphs = {}
+    structures = {}
+    parser = PDBParser()
+    for i, row in df.iterrows():
+        structures[row['mutation']] = parser.get_structure(row['mutation'], row['pdb_file'])
+    for i, row in df.iterrows():
+        #print(row['mutation'])
+        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, )
+    df_patients =pd.read_excel('../datasets/aku_prin_v2.0.xlsx')
+    df_patients = df_patients[['Protein change allele 1 ', 'Protein change allele 2']]
+
+    df_patients['graph_allele1'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 1 '] ]
+    df_patients['graph_allele2'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 2'] ]
+    df_patients['structure_allele1'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 1 '] ] 
+    df_patients['structure_allele2'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 2'] ]
+    return df_patients
