@@ -43,7 +43,7 @@ def create_graph_df():
         structures[row['mutation']] = parser.get_structure(row['mutation'], row['pdb_file'])
     for i, row in df.iterrows():
         #print(row['mutation'])
-        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, )
+        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, verbose=False)
     df_patients =pd.read_excel('../datasets/aku_prin_v2.0.xlsx')
     df_patients = df_patients[['Protein change allele 1 ', 'Protein change allele 2']]
 
