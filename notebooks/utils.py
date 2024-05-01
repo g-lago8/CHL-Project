@@ -33,9 +33,9 @@ def replace(sequence: MutableSeq, mutation:str) -> MutableSeq:
     return sequence
 
 
-def create_graph_df():
+def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../datasets/aku_prin_v2.0.xlsx' ):
     config = ProteinGraphConfig()
-    df = pd.read_csv("../datasets/pdb_files.csv")
+    df = pd.read_csv(pdb_path)
     graphs = {}
     structures = {}
     parser = PDBParser()
@@ -43,8 +43,8 @@ def create_graph_df():
         structures[row['mutation']] = parser.get_structure(row['mutation'], row['pdb_file'])
     for i, row in df.iterrows():
         #print(row['mutation'])
-        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, verbose=False)
-    df_patients =pd.read_excel('../datasets/aku_prin_v2.0.xlsx')
+        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, )
+    df_patients =pd.read_excel(akussy_path)
     df_patients = df_patients[['Protein change allele 1 ', 'Protein change allele 2']]
 
     df_patients['graph_allele1'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 1 '] ]
