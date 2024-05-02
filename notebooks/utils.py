@@ -6,31 +6,33 @@ from graphein.protein.graphs import construct_graph
 from Bio.PDB import PDBParser 
 
 
-def replace(sequence: MutableSeq, mutation:str) -> MutableSeq:
+def replace(sequence: MutableSeq, mutation:str, verbose = False) -> MutableSeq:
     """
     takes a MutableSequence and a string  of type "A000B" and performs
     """
 
     original = mutation[0]
     mut = mutation[-1]
-
+    sequence_copy = sequence[:]
     try:
         position = int(mutation[1:-1])
     except:
-        print('Invalid mutation format: should be AnB where n is an integer, representing the position, A and B two letters representing an aminoacid')
+        if verbose:
+            print('Invalid mutation format: should be AnB where n is an integer, representing the position, A and B two letters representing an aminoacid')
         return
     
-    if len(sequence)< position-1:
-        print('Sequence too short')
+    if len(sequence_copy)< position-1:
+        if verbose:
+            print('Sequence too short')
         return
     print
-    if sequence[position-1] != original.upper():
-        
-        print(f'Original aminoacid in the sequence and in the mutation do not correspond: original aminoacid: {sequence[position-1]}')
+    if sequence_copy[position-1] != original.upper():
+        if verbose:
+            print(f' aminoacid in the sequence and in the mutation do not correspond: original aminoacid: {sequence_copy[position-1]}')
         return
     
-    sequence[position-1] = mut.upper()
-    return sequence
+    sequence_copy[position-1] = mut.upper()
+    return sequence_copy
 
 
 def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../datasets/aku_prin_v2.0.xlsx' ):
