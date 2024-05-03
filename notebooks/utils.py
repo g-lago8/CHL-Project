@@ -35,8 +35,8 @@ def replace(sequence: MutableSeq, mutation:str, verbose = False) -> MutableSeq:
     return sequence_copy
 
 
-def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../datasets/aku_prin_v2.0.xlsx' ):
-    config = ProteinGraphConfig()
+def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../datasets/aku_prin_v2.0.xlsx', config=ProteinGraphConfig() ):
+
     df = pd.read_csv(pdb_path)
     graphs = {}
     structures = {}
@@ -54,3 +54,53 @@ def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../data
     df_patients['structure_allele1'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 1 '] ] 
     df_patients['structure_allele2'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 2'] ]
     return df_patients
+
+
+def get_subgraph(g, nodes):
+    SG = g.__class__()
+    SG.add_nodes_from((n, g.nodes[n]) for n in nodes)
+    if SG.is_multigraph():
+        SG.add_edges_from(
+            (n, nbr, key, d)
+            for n, nbrs in g.adj.items()
+            if n in nodes
+            for nbr, keydict in nbrs.items()
+            if nbr in nodes
+            for key, d in keydict.items()
+        )
+    else:
+        SG.add_edges_from(
+            (n, nbr, d)
+            for n, nbrs in g.adj.items()
+            if n in nodes
+            for nbr, d in nbrs.items()
+            if nbr in nodes
+        )
+    SG.graph.update(g.graph)
+    return SG
+
+def get_edges_from_nodes(g, nodes):
+    active_edges = {}
+    nodes_name = []
+    for i in nodes:
+        active_edges[i] = []
+
+    for node in g.nodes:
+        #get the int of the node at the end of the string
+        nnode = int(node.split(':')[2])
+        if nnode in nodes:
+            nodes_name.append(node)
+            # get the edges of the node
+            for edge in g.edges(node, data=True):
+                active_edges[nnode].append(edge)
+
+    return nodes_name, active_edges
+
+def get_edge_list_from_edgeData(node_list ,edgeData):
+    active_edges_num = {}
+    for i in node_list:
+        active_edges_num[i] = []
+
+    for key, value in edgeData.items():
+        for edge in value:
+            active_edges_num[key].append(edge[1].split(':')[2])
