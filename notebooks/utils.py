@@ -79,6 +79,9 @@ def get_subgraph(g, nodes):
     SG.graph.update(g.graph)
     return SG
 
+"""given a graph and a list of nodes, return a tuple that includes:
+-the nodes as strings in the format 'A:residue:position'
+-the edges of the nodes in the list with all the data"""
 def get_edges_from_nodes(g, nodes):
     active_edges = {}
     nodes_name = []
@@ -96,6 +99,9 @@ def get_edges_from_nodes(g, nodes):
 
     return nodes_name, active_edges
 
+"""given a list of nodes and the edgeData, return the edges as integers list,
+   ignoring the string format of the original nodes
+   #TODO: è bruttq"""
 def get_edge_list_from_edgeData(node_list ,edgeData):
     active_edges_num = {}
     for i in node_list:
@@ -104,3 +110,17 @@ def get_edge_list_from_edgeData(node_list ,edgeData):
     for key, value in edgeData.items():
         for edge in value:
             active_edges_num[key].append(edge[1].split(':')[2])
+
+
+"""given a list of nodes, return the nodes that are n-neighbors (of the main amino acid seq) the nodes in the list
+#TODO: extend this to all the possibile edges in the graph
+#TODO: check if the nodes are in the graph"""
+
+def get_neighbor_nodes(nodes, n):
+    active_site_neighbors = []
+    for node in nodes:
+        for i in range(n*2+1):
+            active_site_neighbors.append(node - n + i)
+    
+    active_site_neighbors = list(set(active_site_neighbors))
+    return active_site_neighbors
