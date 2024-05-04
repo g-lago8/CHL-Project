@@ -5,4 +5,7 @@ matplotlib
 openpyxl
 scikit-learn
 seaborn
-
+graphein
+torch
+torch-geometric
+typing-extensions==4.11.0  # gives ERROR with graphein but it doesn't matter 
