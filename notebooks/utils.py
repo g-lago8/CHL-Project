@@ -48,6 +48,9 @@ def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../data
         graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, )
     df_patients =pd.read_excel(akussy_path)
     df_patients = df_patients[['Protein change allele 1 ', 'Protein change allele 2']]
+    # strip every element in the columns
+    df_patients['Protein change allele 1 '] = df_patients['Protein change allele 1 '].str.strip()
+    df_patients['Protein change allele 2'] = df_patients['Protein change allele 2'].str.strip()
 
     df_patients['graph_allele1'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 1 '] ]
     df_patients['graph_allele2'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 2'] ]
