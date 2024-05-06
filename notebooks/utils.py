@@ -45,7 +45,7 @@ def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../data
         structures[row['mutation']] = parser.get_structure(row['mutation'], row['pdb_file'])
     for i, row in df.iterrows():
         #print(row['mutation'])
-        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, )
+        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, verbose=False)
     df_patients =pd.read_excel(akussy_path)
     df_patients = df_patients[['Protein change allele 1 ', 'Protein change allele 2']]
     # strip every element in the columns
@@ -56,6 +56,11 @@ def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../data
     df_patients['graph_allele2'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 2'] ]
     df_patients['structure_allele1'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 1 '] ] 
     df_patients['structure_allele2'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 2'] ]
+    for i, row in df.iterrows():
+        if row['mutation'] in df_patients['Protein change allele 1 '].values:
+            df_patients.loc[df_patients['Protein change allele 1 '] == row['mutation'], 'pdb_file_allele1'] = row['pdb_file']
+        if row['mutation'] in df_patients['Protein change allele 2'].values:
+            df_patients.loc[df_patients['Protein change allele 2'] == row['mutation'], 'pdb_file_allele2'] = row['pdb_file']
     return df_patients
 
 
