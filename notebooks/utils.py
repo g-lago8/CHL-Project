@@ -40,25 +40,30 @@ def replace(sequence: MutableSeq, mutation:str, verbose = False) -> MutableSeq:
     return sequence_copy
 
 
-def create_graph_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../datasets/aku_prin_v2.0.xlsx', config=ProteinGraphConfig() ):
-
+def generate_df(pdb_path ="../datasets/pdb_files.csv", akussy_path ='../datasets/aku_prin_v2.0.xlsx', config=ProteinGraphConfig(), generate_graph=True):
+    """ 
+    With this function we can focus on the patients having the mutations for which we have the pdb files.
+    Setting generate_graph to True will also generate the graphs for the mutations.
+    """
     df = pd.read_csv(pdb_path)
     graphs = {}
     structures = {}
     parser = PDBParser()
     for i, row in df.iterrows():
         structures[row['mutation']] = parser.get_structure(row['mutation'], row['pdb_file'])
-    for i, row in df.iterrows():
-        #print(row['mutation'])
-        graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, verbose=False)
+    if generate_graph:
+        for i, row in df.iterrows():
+            #print(row['mutation'])
+            graphs[row['mutation'] ] = construct_graph(path = row['pdb_file'], config= config, verbose=False)
     df_patients =pd.read_excel(akussy_path)
     df_patients = df_patients[['Protein change allele 1 ', 'Protein change allele 2']]
     # strip every element in the columns
     df_patients['Protein change allele 1 '] = df_patients['Protein change allele 1 '].str.strip()
     df_patients['Protein change allele 2'] = df_patients['Protein change allele 2'].str.strip()
 
-    df_patients['graph_allele1'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 1 '] ]
-    df_patients['graph_allele2'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 2'] ]
+    if generate_graph:
+        df_patients['graph_allele1'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 1 '] ]
+        df_patients['graph_allele2'] = [graphs[mut] if mut in graphs else None for mut in df_patients['Protein change allele 2'] ]
     df_patients['structure_allele1'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 1 '] ] 
     df_patients['structure_allele2'] = [structures[mut] if mut in structures else None for mut in df_patients['Protein change allele 2'] ]
     for i, row in df.iterrows():
