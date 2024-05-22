@@ -166,3 +166,23 @@ def get_rmsd(path_og, path_m):
     )
     superimposed = transformation.apply(original)
     return struc.rmsd(original, superimposed)
+
+
+from Bio.PDB import PDBParser, Superimposer, is_aa
+
+""" Function to get backbone atoms from residues that are present in both structures """
+def get_common_backbone_atoms(structure1, structure2):
+    backbone_atoms1 = []
+    backbone_atoms2 = []
+    for model1, model2 in zip(structure1, structure2):
+        for chain1, chain2 in zip(model1, model2):
+            res_dict2 = {res.get_id(): res for res in chain2 if is_aa(res)}
+            for res1 in chain1:
+                if is_aa(res1) and res1.get_id() in res_dict2:
+                    res2 = res_dict2[res1.get_id()]
+                    for atom1 in res1:
+                        if atom1.get_id() in ('N', 'CA', 'C', 'O'):
+                            atom2 = res2[atom1.get_id()]
+                            backbone_atoms1.append(atom1)
+                            backbone_atoms2.append(atom2)
+    return backbone_atoms1, backbone_atoms2
