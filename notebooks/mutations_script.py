@@ -26,11 +26,10 @@ hgd = sequences[0].seq
 hgd = MutableSeq(str(hgd))
 mutations_to_get = ['H292R', 'R321P', 'R336K', 'R336T', 'N337D', 'R347P', 'Y350C', 'P359L', 'H371R', 'G372R', 'P373L', 'D374H']
 
-mutations=[]
+mutations={}
 for mutation in mutations_to_get:
-    mutations.append(replace(hgd, mutation))
-
+    mutations[mutation] = replace(hgd, mutation)
 # save the mutations to a file
 with open('mutations.txt', 'w') as f:
     for mutation in mutations:
-        f.write("%s\n" % mutation)
+        f.write(f'{mutation},{mutations[mutation]}\n')
