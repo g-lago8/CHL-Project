@@ -1,9 +1,13 @@
 
 import pandas as pd
+
+from Bio.PDB import PDBParser 
+from Bio.PDB.DSSP import DSSP
 from Bio.Seq import MutableSeq
+
 from graphein.protein.config import ProteinGraphConfig
 from graphein.protein.graphs import construct_graph
-from Bio.PDB import PDBParser 
+
 import biotite.structure as struc
 from biotite.structure.io.pdb import PDBFile
 from biotite.structure import AtomArray, AtomArrayStack
@@ -186,3 +190,17 @@ def get_common_backbone_atoms(structure1, structure2):
                             backbone_atoms1.append(atom1)
                             backbone_atoms2.append(atom2)
     return backbone_atoms1, backbone_atoms2
+
+"""Get the secondary structure of a protein from a pdb file"""
+def get_secondary_structure(path, parser):
+
+    structure = parser.get_structure("HGD", path)
+
+    model = structure[0]
+
+    dssp = DSSP(model, path, dssp='mkdssp')
+
+    secondary_structure = [x[2] for x in dssp.property_list]
+    # convert in a string
+    secondary_structure = ''.join(secondary_structure)
+    return secondary_structure
