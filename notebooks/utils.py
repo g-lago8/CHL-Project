@@ -148,30 +148,6 @@ def get_neighbor_nodes(nodes, n):
     return active_site_neighbors
 
 
-def get_rmsd(path_og, path_m):
-
-    file = PDBFile.read(path_og)
-    original = file.get_structure()
-    original = original[0]
-
-    file2 = PDBFile.read(path_m)
-    mutation = file2.get_structure()
-    mutation = mutation[0]
-
-
-    original = original[(original.chain_id == "A") | (original.chain_id == "B")]
-    original = original[~struc.filter_solvent(original)]
-    mutation = mutation[~struc.filter_solvent(mutation)]
-    common = original[struc.filter_intersection(original, mutation)]
-    common_mutation = mutation[struc.filter_intersection(mutation, original)]
-
-    superimposed, transformation = struc.superimpose(
-        common, common_mutation, (common.atom_name == "CA")
-    )
-    superimposed = transformation.apply(original)
-    return struc.rmsd(original, superimposed)
-
-
 from Bio.PDB import PDBParser, Superimposer, is_aa
 
 """ Function to get backbone atoms from residues that are present in both structures """
